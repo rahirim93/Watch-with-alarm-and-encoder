@@ -18,12 +18,12 @@ String timeCurrent = "";                    // Переменная для хр�
 long timerOutputTime;                       // Переменная для таймера вывода времени каждую секунду
 byte getHours = 0;
 byte getMinutes = 0;
-byte setHours = 0;                          // Переменная для настройки часов
-byte setMinutes = 0;                        // Переменная для настройки минут
-byte hoursWake;                             // Переменная часов будильника
-byte minutesWake;                           // Переменная минут будильника
+int8_t setHours = 0;                          // Переменная для настройки часов
+int8_t setMinutes = 0;                        // Переменная для настройки минут
+int8_t hoursWake;                             // Переменная часов будильника
+int8_t minutesWake;                           // Переменная минут будильника
 boolean factAlarm;                          // Факт наступления времени пробуждения
-int piezoPin = 2;                           // Вывод для зуммера
+byte piezoPin = 2;                           // Вывод для зуммера
 long piezoTimerOn;                          // Таймер для пищалки
 long piezoTimerOff;
 void setup() {
@@ -111,6 +111,22 @@ void setAlarmTime() {
           if (hoursWake > 23) {
             hoursWake = 0;
             lcd.clear();
+            lcd.setCursor(7, 0); lcd.print("Alarm");
+            lcd.setCursor(0, 1); lcd.print("Set Hours");
+          }
+          lcd.setCursor(0, 0);
+          if (hoursWake < 10){
+            lcd.print("0");
+            }
+          lcd.print(hoursWake); lcd.print(":"); lcd.print(minutesWake);
+        }
+        if (enc1.isLeft()) {
+          hoursWake = hoursWake - 1;
+          if (hoursWake < 0) {
+            hoursWake = 23;
+            lcd.clear();
+            lcd.setCursor(7, 0); lcd.print("Alarm");
+            lcd.setCursor(0, 1); lcd.print("Set Hours");
           }
           lcd.setCursor(0, 0);
           lcd.print(hoursWake); lcd.print(":"); lcd.print(minutesWake);
@@ -133,7 +149,15 @@ void setAlarmTime() {
           }
           lcd.setCursor(0, 0);
           lcd.print(hoursWake); lcd.print(":"); lcd.print(minutesWake);
-
+        }
+        if (enc1.isLeft()) {
+          minutesWake = minutesWake - 1;
+          if (minutesWake < 0) {
+            minutesWake = 59;
+            lcd.clear();
+          }
+          lcd.setCursor(0, 0);
+          lcd.print(hoursWake); lcd.print(":"); lcd.print(minutesWake);
         }
       }
       break;
@@ -165,6 +189,16 @@ void setTime() {
           time.settime(-1, -1, setHours);
           outputTime();
         }
+        if (enc1.isLeft()){
+          setHours = setHours - 1;
+          if (setHours < 0){
+            setHours = 23;
+            lcd.clear();
+            outputTime();
+            }
+          time.settime(-1, -1, setHours);
+          outputTime();
+          }
       }
       break;
     case 1: {
@@ -179,6 +213,16 @@ void setTime() {
           setMinutes++;
           if (setMinutes > 59) {
             setMinutes = 0;
+            lcd.clear();
+            outputTime();
+          }
+          time.settime(-1, setMinutes, -1);
+          outputTime();
+        }
+        if (enc1.isLeft()) {
+          setMinutes = setMinutes - 1;
+          if (setMinutes < 0) {
+            setMinutes = 59;
             lcd.clear();
             outputTime();
           }
